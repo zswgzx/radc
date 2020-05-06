@@ -1,7 +1,6 @@
-# radc
-Applications for Rush Alzheimer's Disease Center Neuroimaging core. The following is for Azure Devops, but also works for git CLI
+# Applications for Rush Alzheimer's Disease Center Neuroimaging core. The following is for Azure Devops, but also works for git CLI
 
-#**Create/clone repository, create/edit file, commit/push/pull**
+## Create/clone repository, create/edit file, commit/push/pull
 
 *It is recommend to open this README in another tab as you perform the tasks below. DevOps has a structure (top->down) organization -> project -> repos etc.. You can [watch this video](https://youtu.be/0ocf7u76WSo) for a full demo from bitbucket. Open the video in a new tab OR view a step-by-step [tutorial](https://www.atlassian.com/git/tutorials/learn-git-with-bitbucket-cloud).*
 
