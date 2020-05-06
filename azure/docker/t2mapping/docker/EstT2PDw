@@ -1,0 +1,42 @@
+# directory where input file is
+cd /input
+
+# prep for t2 est. (remove 1st echo!)
+scankey=$1
+mkdir $scankey
+mv *gz $scankey
+cd $scankey
+fslsplit * echo
+
+for i in {1..4};do 
+  let "ii=$i-1"
+  fslmaths echo`printf %04d $i` -add 0 echo`printf %04d $ii` -odt float
+done
+gunzip echo*
+
+# estimate t2/chi2/pdw/mask
+t2_map_mask_float 4 40 60 80 100
+gzip [cmpt]*.nii
+fslmaths t2vol -nan t2vol
+
+# fsl bet to remove eye/neck
+bet echo0000 brain -S
+
+# more clean up
+fslmaths brain_mask -fillh26 brain_mask -odt char
+fslmaths t2vol -mas brain_mask -abs t2vol1
+fslmaths t2vol1 -thr 250 -bin mask250
+fslmaths brain_mask -sub mask250 -ero chi2mask -odt char
+
+# trivial stuffs
+rm echo0* brain{,_skull}.nii.gz {mask250,t2vol1}.nii.gz
+mv chi2.nii.gz ../$scankey-chi2.nii.gz
+mv mask.nii.gz ../$scankey-headmask.nii.gz
+mv t2vol.nii.gz ../$scankey-rawT2.nii.gz
+mv brain_mask.nii.gz ../$scankey-brainmask.nii.gz
+mv chi2mask.nii.gz ../$scankey-chi2mask.nii.gz
+mv pdw.nii.gz ../$scankey-rawPDw.nii.gz
+cd ..
+fslmaths $scankey-rawPDw -mas $scankey-headmask $scankey-pdw
+fslmaths $scankey-rawT2 -mas $scankey-headmask -thr 0 $scankey-t2
+rm -r $scankey

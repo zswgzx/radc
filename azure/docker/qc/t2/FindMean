@@ -1,0 +1,10 @@
+#!/bin/bash
+# find mean, median and std of Chi2 in Chi2mask for QA
+
+for sub in `cat ../subjects`;do
+	fslstats chi2/$sub-chi2 -k chi2/$sub-chi2mask -M >> nonzero-mean
+	#fslstats chi2/$sub-chi2 -k chi2/$sub-chi2mask -P 50 >> nonzero-median
+	#fslstats chi2/$sub-chi2 -k chi2/$sub-chi2mask -S >> nonzero-std
+	echo $sub done
+done
+

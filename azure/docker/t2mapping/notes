@@ -1,0 +1,21 @@
+folder structure to run the script
+
+.
+├── pdw
+│   └── raw
+├── QA
+│   ├── chi2
+│   ├── FindMean (bash script for QA, link to file)
+│   └── nonzero-mean (txt with QA values, link to file)
+├── t2-5echoes
+│   └── EstT2MakeChi2MaskSge
+├── t2s
+│   ├── masks
+│   └── raw
+└── ...
+
+subjects that failed "bet -S":
+180529_02_13885104	(use "bet echo0000 brain -R" instead)
+180710_08_05427601	ditto
+180724_00_99516006	ditto
+181213_08_04984547	ditto

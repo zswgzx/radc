@@ -1,0 +1,22 @@
+cat /media/shengwei/BackupData/fmri/uc/150908/sfnrs >> 2sfnr/sfnrs
+rm /media/shengwei/BackupData/fmri/uc/150908/sfnrs
+
+for sub in `cat /media/shengwei/BackupData/fmri/uc/150908/subjs1`;do
+  ln -s /media/shengwei/BackupData/fmri/uc/150908/$sub/displacement 1displacement/data/4tpi/$sub
+
+  ln -s /media/shengwei/BackupData/fmri/uc/150908/$sub/QAresults/qa_slicevardata_wrapped.xml.nii.gz 3perSliceVar/data/nii/$sub.nii.gz 
+  fslstats 3perSliceVar/data/nii/$sub -R | awk '{print $2}' > 3perSliceVar/data/max/$sub
+  fslstats 3perSliceVar/data/nii/$sub -m > 3perSliceVar/data/mean/$sub
+
+  awk '{print $2}' /media/shengwei/BackupData/fmri/uc/150908/$sub/QAresults/qa_data_maskedvolmeans.txt | tail -160 > 4volmeans/data/masked/$sub
+
+  awk '{print $2}' /media/shengwei/BackupData/fmri/uc/150908/$sub/QAresults/qa_data_outliercount.txt | tail -160 > 6outlier/data/$sub
+
+  awk '{print $2}' /media/shengwei/BackupData/fmri/uc/150908/$sub/QAresults/qa_data_FWHMx-X.txt | tail -160 > 7fwhm/data/x/$sub
+  awk '{print $2}' /media/shengwei/BackupData/fmri/uc/150908/$sub/QAresults/qa_data_FWHMx-Y.txt | tail -160 > 7fwhm/data/y/$sub
+  awk '{print $2}' /media/shengwei/BackupData/fmri/uc/150908/$sub/QAresults/qa_data_FWHMx-Z.txt | tail -160 > 7fwhm/data/z/$sub
+
+  ln -s /media/shengwei/BackupData/fmri/uc/150908/$sub/interleave-masked 8interleave/data/$sub
+
+  echo $sub done
+done

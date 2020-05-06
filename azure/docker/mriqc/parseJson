@@ -1,0 +1,20 @@
+#!/bin/bash
+# parse json to get IQMs from file 'metrics'
+
+metrics='csvs/metrics'
+vals='csvs/vals.csv'
+
+mv jsons/* .
+for sub in `ls *.json`;do
+	for key in `cat $metrics`;do
+		cat $sub | jq ."$key" >> val
+	done
+	mv val `echo $sub |cut -d_ -f1`val
+done
+mv *.json jsons
+
+# paste columns with separator ','
+paste -d, `ls sub*val` > $vals
+rm sub*val
+
+paste -d, $metrics $vals > csvs/data.csv

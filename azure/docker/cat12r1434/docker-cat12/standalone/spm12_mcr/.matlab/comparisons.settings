@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings name="comparisons" version="1" xmlns="urn:mathworks.matlab.settings" xsi:schemaLocation="urn:mathworks.matlab.settings settings.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <key name="DiffLinkAutoStart">
+        <bool>
+        </bool>
+    </key>
+    <key name="FilterMode">
+        <bool>
+        </bool>
+    </key>
+    <key name="RecentFiles">
+        <string>
+            <value><![CDATA[/home/aevia/Downloads/Fit_ppm_complex_bipolar.m:/home/aevia/Desktop/MEDI_toolbox/functions/Fit_ppm_complex_bipolar.m:/home/aevia/Desktop/MEDI_toolbox/TFI/gpuimp_multi_new.m:/home/aevia/Desktop/MEDI_toolbox/TFI/gpuimp_multi_new_aj.m]]></value>
+        </string>
+    </key>
+    <settings name="colors">
+        <settings name="currentProfile">
+            <key name="lastChosen">
+                <string>
+                    <value><![CDATA[Default]]></value>
+                </string>
+            </key>
+        </settings>
+    </settings>
+    <settings name="folder">
+        <key name="FileNameFilters">
+            <string undef="true">
+            </string>
+        </key>
+        <key name="IncludeSubfolders">
+            <bool>
+            </bool>
+        </key>
+    </settings>
+    <settings name="text">
+        <key name="ColumnsVisible">
+            <int32>
+                <value>80</value>
+            </int32>
+        </key>
+        <key name="IgnoreWhitespace">
+            <bool>
+                <value>0</value>
+            </bool>
+        </key>
+        <key name="ShowDifferencesOnly">
+            <bool>
+                <value>1</value>
+            </bool>
+        </key>
+    </settings>
+    <settings name="xml">
+        <key name="JVMInitHeapSize">
+            <int32>
+            </int32>
+        </key>
+        <key name="JVMMaxHeapSize">
+            <int32>
+            </int32>
+        </key>
+    </settings>
+</settings>

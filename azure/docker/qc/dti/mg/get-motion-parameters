@@ -1,0 +1,29 @@
+for sub in `cat ../dtiprep/subjects`;do
+
+  cp /media/shengwei/BackupData/dti/mg/150715/${sub}_proc/${sub}_DMC_R1_SAVE/${sub}_DMC_R1_AM.nii.gz /media/shengwei/BackupData/dti/mg/150715/${sub}_proc/${sub}_DMC_R1_FSL_RAW_UNSORTED/${sub}_DMC_R1_RAW_4D.nii.gz .
+  fslsplit ${sub}_DMC_R1_RAW_4D
+  mv ${sub}_DMC_R1_AM.nii.gz ref.nii.gz
+
+  for i in {0..45};do
+
+	ii=`printf "%04d" $i`
+
+	# rigid registration of eddy/motion corrected volumes to estimated b0
+	flirt -in vol$ii -ref ref -out test -searchrx -90 90 -searchry -90 90 -searchrz -90 90 -omat rigid.mat -cost normmi -dof 6
+
+	# decompose rigid transformation matrix
+	avscale --allparams rigid.mat > avscale-output
+
+	# search motion info
+	sed -nr '7s/[^=]+=\s*(.+)$/\1/p' avscale-output > rot 	# extract rotation
+	sed -nr '9s/[^=]+=\s*(.+)$/\1/p' avscale-output > trans # extract translation
+
+	pr -m -t -s rot trans >> $sub-motion
+
+	rm rot trans test.nii.gz
+
+  done
+  rm vol* ref.* rigid.mat ${sub}_DMC*.gz
+  echo $sub done
+
+done

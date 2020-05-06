@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# This script converts raw nii files from dcm2nii to nrrd format for DTIPrep
+
+for sub in `cat subjects`;do
+    # create nrrd header (verified by 3Dslice)
+    cp init.nhdr $sub-dwi.nhdr
+    echo "data file: $sub-dwi.raw" >> $sub-dwi.nhdr
+    echo "measurement frame: (1,0,0) (0,1,0) (0,0,1)" >> $sub-dwi.nhdr
+    echo "modality:=DWMRI" >> $sub-dwi.nhdr
+    echo "DWMRI_b-value:=1000" >> $sub-dwi.nhdr
+
+    # reorganize bvecs from rows to columns
+    for i in `head -1 /media/shengwei/BackupData/dti/mg/150715/bvecs/$sub.bvecs`;do echo $i;done > col1
+    for i in `head -2 /media/shengwei/BackupData/dti/mg/150715/bvecs/$sub.bvecs |tail -1`;do echo $i;done > col2
+    for i in `tail -1 /media/shengwei/BackupData/dti/mg/150715/bvecs/$sub.bvecs`;do echo $i;done > col3
+    pr -m -t -s' ' col? > bvecs
+
+    dw=0
+    while read line;do
+	echo "DWMRI_gradient_`zeropad $dw 4`:=" $line >> $sub-dwi.nhdr
+	let "dw+=1"
+    done < bvecs
+    echo >> $sub-dwi.nhdr
+
+    # copy raw nii file, remove nii header and extract data only
+    cp /media/shengwei/BackupData/dti/mg/150715/raw/$sub-DWIs.nii.gz $sub-rawDWIs.nii.gz
+    fslchfiletype NIFTI_PAIR $sub-rawDWIs
+    mv $sub-rawDWIs.img $sub-dwi.raw
+
+    rm $sub-rawDWIs.hdr col? bvecs
+    echo $sub done
+done

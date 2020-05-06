@@ -1,0 +1,26 @@
+#!/bin/bash
+
+for sub in `cat ../dtiprep/subjects`;do
+
+    mkdir $sub
+    cp /media/shengwei/BackupData/dti/mg/150715/raw/$sub-DWIs.nii.gz $sub/DWIs.nii.gz
+    cp /media/shengwei/BackupData/dti/mg/150715/${sub}_proc/${sub}_DMC_R1_SAVE/*{CS,OUT}.nii.gz $sub/
+    cd $sub
+
+    fslsplit DWIs dw
+    fslmerge -t 6b0s dw0000 dw0001 dw0002 dw0003 dw0004 dw0005
+    rm dw000[0-5].nii.gz
+    bet 6b0s 6b0s -f 0.2 -m -n
+
+    for i in {1..40};do
+	let ii=$i+5
+	mv dw`printf "%04d" $ii`.nii.gz dw`printf "%04d" $i`.nii.gz
+        bet dw`printf "%04d" $i` dw`printf "%04d" $i` -f 0.2 -m -n
+    done
+
+    echo $sub done at `date|awk '{print $4}'`
+    rm DWIs.nii.gz
+    mv ${sub}_DMC_R1_CS.nii.gz chisq.nii.gz
+    mv ${sub}_DMC_R1_OUT.nii.gz outlier.nii.gz
+    cd ..
+done

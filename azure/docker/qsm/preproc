@@ -1,0 +1,40 @@
+#!/bin/bash
+# run pre-processing before running STI; it requires sform to have no rotation
+# for mg, requires qsm-{mag,phs}.nii & hd-bet mask
+# for uc, requires {real,imag}0.nii & hd-bet mask
+
+Usage() {
+    cat <<EOF
+Usage: preproc <scanner: mg or uc> <scan_key>
+EOF
+    exit 1
+}
+
+[ "$1" = '' ] || [ "$2" = '' ] && Usage
+sub=$2
+
+# drop image from the last echo
+fslmaths ${sub}_bet_mask -ero -ero mask-hdbet-ero2 -odt char
+if [ $1 = 'mg' ];then
+    fslroi qsm-mag mag 0 -1 0 -1 0 -1 0 4
+    fslroi qsm-phs phs 0 -1 0 -1 0 -1 0 4
+    fslorient -setsform \
+        -`fslval mag pixdim1` 0 0 `fslorient -getsform mag | awk '{print $4}'` \
+        0 `fslval mag pixdim2` 0 `fslorient -getsform mag | awk '{print $8}'` \
+        0 0 `fslval mag pixdim3` `fslorient -getsform mag | awk '{print $12}'` \
+        0 0 0 1 mag
+    fslorient -setsform \
+        -`fslval phs pixdim1` 0 0 `fslorient -getsform phs | awk '{print $4}'` \
+        0 `fslval phs pixdim2` 0 `fslorient -getsform phs | awk '{print $8}'` \
+        0 0 `fslval phs pixdim3` `fslorient -getsform phs | awk '{print $12}'` \
+        0 0 0 1 phs
+
+    fslroi qsm-mag masked 0 -1 0 -1 0 -1 0 1
+    fslmaths masked -mas mask-hdbet-ero2 masked
+    fslcpgeom mag mask-hdbet-ero2 -d
+else
+    fslroi imag0 imag 0 -1 0 -1 0 -1 0 4
+    fslroi real0 real 0 -1 0 -1 0 -1 0 4
+    fslcpgeom imag0 mask-hdbet-ero2 -d
+fi
+

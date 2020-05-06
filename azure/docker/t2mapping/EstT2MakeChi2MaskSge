@@ -1,0 +1,63 @@
+#!/bin/bash
+# estimate T2 maps and make Chi2 mask for QA
+
+subList='../subjects'
+
+for sub in `cat $subList`;do
+	mkdir $sub
+	mv $sub-5T2s.nii.gz $sub/
+	cd $sub
+
+	fslsplit $sub-5T2s echo -t
+
+	# change data type to float
+	for i in {0..4};do
+		fslmaths echo000$i -add 0 echo000$i -odt float
+	done
+	gunzip echo0*
+
+	# estimate T2
+	t2_map_mask_float 5 20 40 60 80 100
+
+        cd ..
+	echo "bet $sub/echo0000 $sub/brain -S" >> commands
+        echo $sub T2 est. done...
+done
+
+gzip 1*/{chi2,mask,t2vol,pdw}.nii
+
+# brain extraction and eye removal in parallel with SGE
+fsl_sub -l betS -N betS -t commands
+
+cat <<combineScript > cleanup
+for sub in `cat $subList | tr '\n' ' '`;do
+        cd \$sub
+
+        # brain extraction and remove eye, ~5mins
+        fslmaths brain_mask -fillh26 brain_mask -odt char
+        fslmaths t2vol -mas brain_mask -abs t2vol1
+        # intensity thresholding to extract CSF
+        fslmaths t2vol1 -thr 250 -bin mask250
+        # chi2 mask = brain mask - CSF mask
+        fslmaths brain_mask -sub mask250 -ero chi2mask -odt char
+
+        rm echo0* {brain,brain_skull,mask250,t2vol1}.nii.gz
+
+        mv chi2.nii.gz ../../QA/chi2/\$sub-chi2.nii.gz
+        mv mask.nii.gz ../../t2s/masks/\$sub-headmask.nii.gz
+        mv t2vol.nii.gz ../../t2s/raw/\$sub-rawT2.nii.gz
+        mv brain_mask.nii.gz ../../t2s/masks/\$sub-brainmask.nii.gz
+        mv chi2mask.nii.gz ../../QA/chi2/\$sub-chi2mask.nii.gz
+        mv pdw.nii.gz ../../pdw/raw/\$sub-rawPDw.nii.gz
+
+        fslmaths ../../pdw/raw/\$sub-rawPDw -mas ../../t2s/masks/\$sub-headmask ../../pdw/\$sub-pdw
+	fslmaths ../../t2s/raw/\$sub-rawT2 -mas ../../t2s/masks/\$sub-headmask -thr 0 ../../t2s/\$sub-t2
+        cd ..
+done
+mv 1*/* .
+rm -r 1*/ commands cleanup
+combineScript
+chmod u+x cleanup
+
+# AFTER all SGE jobs done, check betS/ to see if any failure, then execute script cleanup
+# qsub -cwd -hold_jid betS -N cleanup -terse ./cleanup

@@ -1,0 +1,3 @@
+matlab18b -nodesktop -r 'compileFile'
+docker build -f Dockerfile -t [??/mri-invivo-qsm:1.0] .
+./run_qsm_v3_par.sh $path/MATLAB/MATLAB_Runtime/v95 mg $path 6

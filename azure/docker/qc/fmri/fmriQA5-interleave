@@ -1,0 +1,24 @@
+for sub in `cat subjs1`;do
+	cd $sub
+	rm 3dFWHMx.1D*
+	
+# for all time points (as KA suggested), extract it from 4d, slice it to many 2ds, then merge them as 4d, and use 'fslstats -t' to get slice-wise non-zero mean, and redirect outputs to text file
+
+	nvols=`fslnvols rfmri`
+	touch interleave-masked
+	for ((i=0;i<$nvols;i++)) ;do
+                fslroi rfmri rfmri-vol$i 0 -1 0 -1 0 -1 $i 1
+		fslmaths rfmri-vol$i -mas QAresults/qa_maskdata_wrapped.xml rfmri-vol$i
+                fslslice rfmri-vol$i
+                fslmerge -t rfmri-vol$i rfmri-vol${i}_slice* 2>/dev/null
+                rm rfmri-vol${i}_slice_*
+                fslstats -t rfmri-vol$i -M > interleave-tmp
+		pr -m -t -s interleave-masked interleave-tmp > interleave-tmp1
+		mv interleave-tmp1 interleave-masked
+		rm rfmri-vol$i.nii.gz
+        done
+	rm interleave-tmp*
+	
+	echo $sub done
+	cd ..
+done

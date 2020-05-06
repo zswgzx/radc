@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# extract slice-wise intensity artifact check info from the QCReports texts
+# some results in the QCReport may not be accurate, need to double check visually
+# in QCReports the number of gradient/slice starts from 0!
+
+for sub in `cat subjects`; do
+    cat QCReports/$sub-dwi_QCReport.txt | grep whole | awk '{print $2,$3}' | sort -g -k2 -k1 > slice-intensity-check/$sub-slice.txt
+    echo $sub done
+done

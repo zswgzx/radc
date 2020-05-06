@@ -1,0 +1,40 @@
+#!/bin/bash
+# run post-processing after running STI
+
+Usage() {
+    cat <<EOF
+Usage: postproc <scanner: mg or uc>
+EOF
+    exit 1
+}
+
+[ "$1" = '' ] && Usage
+
+if [ $1 = 'mg' ];then
+	fslcpgeom qsm-mag TissuePhase -d
+	fslswapdim TissuePhase -x y z TissuePhase1
+	fslcpgeom qsm-mag QSMstar -d
+	fslswapdim QSMstar -x y z QSMstar1
+	fslcpgeom qsm-mag mask-hdbet-ero2 -d
+	mv TissuePhase1.nii.gz TissuePhase.nii.gz
+	mv QSMstar1.nii.gz QSMstar.nii.gz
+	rm *.nii
+else
+	# after 181011_00_27552763 (includsive), no need to add commented lines below
+	fslcpgeom imag magni -d
+	#fslswapdim magni -x y z magni1
+	#mv magni1.nii.gz magni.nii.gz
+	fslcpgeom imag phase -d
+	#fslswapdim phase -x y z phase1
+	#mv phase1.nii.gz phase.nii.gz
+	fslcpgeom imag TissuePhase -d
+	#fslswapdim TissuePhase -x y z TissuePhase1
+	#mv TissuePhase1.nii.gz TissuePhase.nii.gz
+	fslcpgeom imag QSMstar -d
+	#fslswapdim QSMstar -x y z QSMstar1
+	#mv QSMstar1.nii.gz QSMstar.nii.gz
+	gzip magni.nii phase.nii
+	rm real*.nii.gz imag*.nii.gz *.nii
+	fslroi magni masked 0 -1 0 -1 0 -1 0 1
+	fslmaths masked -mas mask-hdbet-ero2 masked
+fi

@@ -1,0 +1,7 @@
+for sub in `cat subjs1`;do
+	cd $sub
+	~/work/QA/fmri/code/bxh_xcede_tools-1.10.7-lsb30.x86_64/bin/analyze2bxh --xcede rfmri.nii.gz wrapped.xml
+	~/work/QA/fmri/code/bxh_xcede_tools-1.10.7-lsb30.x86_64/bin/fmriqa_generate.pl wrapped.xml /media/shengwei/BackupData/fmri/uc/150908/$sub/QAresults
+#	cp t1.nii.gz t1-reorient.nii.gz
+	cd ..
+done

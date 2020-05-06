@@ -1,0 +1,6 @@
+#!/bin/bash
+
+for sub in `cat ../dtiprep/subjects`;do
+    fslstats ../data/$sub/chisq -k ../data/$sub/chisq_mask -P 50 >> medianChisq.txt
+    echo $sub done
+done

@@ -1,0 +1,9 @@
+for sub in `cat /media/shengwei/BackupData/fmri/uc/150908/subjs1`;do
+	awk '{print $2}' /media/shengwei/BackupData/fmri/uc/150908/$sub/QAresults/qa_data_FWHMx-X.txt | tail -160 > x/$sub
+
+	awk '{print $2}' /media/shengwei/BackupData/fmri/uc/150908/$sub/QAresults/qa_data_FWHMx-Y.txt | tail -160 > y/$sub
+
+	awk '{print $2}' /media/shengwei/BackupData/fmri/uc/150908/$sub/QAresults/qa_data_FWHMx-Z.txt | tail -160 > z/$sub
+
+	echo $sub done
+done

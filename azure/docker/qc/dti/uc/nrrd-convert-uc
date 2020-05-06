@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# This script converts raw nii files from dcm2nii to nrrd format for DTIPrep
+
+for sub in `cat subjects`;do
+    # create nrrd header (verified by 3Dslice)
+    cp init.nhdr $sub-dwi.nhdr
+    echo "data file: $sub-dwi.raw" >> $sub-dwi.nhdr
+    echo "measurement frame: (1,0,0) (0,1,0) (0,0,1)" >> $sub-dwi.nhdr
+    echo "modality:=DWMRI" >> $sub-dwi.nhdr
+    echo "DWMRI_b-value:=1000" >> $sub-dwi.nhdr
+
+    # reorganize bvecs from rows to columns
+    for i in `head -1 /media/shengwei/BackupData/dti/uc/150908/160721_04_13391981_proc/160721_04_13391981_FSL_RAW_UNSORTED/bvecs`;do echo $i;done > col1
+    for i in `head -2 /media/shengwei/BackupData/dti/uc/150908/160721_04_13391981_proc/160721_04_13391981_FSL_RAW_UNSORTED/bvecs |tail -1`;do echo $i;done > col2
+    for i in `tail -1 /media/shengwei/BackupData/dti/uc/150908/160721_04_13391981_proc/160721_04_13391981_FSL_RAW_UNSORTED/bvecs`;do echo $i;done > col3
+    pr -m -t -s' ' col? > bvecs
+
+    dw=0
+    while read line;do
+	echo "DWMRI_gradient_`zeropad $dw 4`:=" $line >> $sub-dwi.nhdr
+	let "dw+=1"
+    done < bvecs
+    echo >> $sub-dwi.nhdr
+
+    # copy raw nii file, remove nii header and extract data only
+    #cp ~/raid/dti-t1-wmh/uc/1*/*/$sub/${sub}_proc/${sub}_FSL_RAW_UNSORTED/${sub}_RAW_4D.nii.gz $sub-rawDWIs.nii.gz
+    cp /media/shengwei/BackupData/dti/uc/150908/${sub}_proc/${sub}_FSL_RAW_UNSORTED/${sub}_RAW_4D.nii.gz $sub-rawDWIs.nii.gz
+    fslchfiletype NIFTI_PAIR $sub-rawDWIs
+    mv $sub-rawDWIs.img $sub-dwi.raw
+
+    rm col? bvecs $sub-rawDWIs.hdr
+    echo $sub done
+done

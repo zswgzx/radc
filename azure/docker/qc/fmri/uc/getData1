@@ -1,0 +1,7 @@
+for sub in `cat /media/shengwei/BackupData/fmri/uc/150908/subjs1`;do
+	awk '{print $2}' /media/shengwei/BackupData/fmri/uc/150908/$sub/QAresults/qa_data_maskedvolmeans.txt | tail -160 > masked/$sub
+
+#	awk '{print $2}' ~/raid/fmri/mg/all/$sub/QAresults/qa_data_volmeans.txt | tail -160 > unmasked/$sub
+
+	echo $sub done
+done

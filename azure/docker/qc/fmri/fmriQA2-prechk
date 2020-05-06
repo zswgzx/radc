@@ -1,0 +1,14 @@
+for sub in `cat subjs1`;do
+	cd $sub
+	
+	# check min. intensity, subjects with negative values REJECT
+	min=`fslstats rfmri -R |awk '{print $1}'`
+	[ `echo "$min < 0" | bc -l` = "1" ] && echo "$sub has negative intensity voxel!!" >> ../warnings
+
+	# check identical time point volumes, REJECT if any
+	3dvolreg -Fourier -1Dfile test rfmri.nii.gz
+	[ `sort test|uniq -d|wc -l` -ne 0 ] && echo "$sub has identical time point volumes!!" >> ../warnings
+	rm volreg* test
+	echo $sub done
+	cd ..
+done

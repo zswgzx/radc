@@ -1,0 +1,38 @@
+#!/bin/bash
+
+for sub in `cat ../dtiprep/subjects`;do
+    # calculate non-zero mean and std for 6 b0 volumes
+    fslstats -t ../data/$sub/6b0s -k ../data/$sub/6b0s_mask -M -S > $sub-nonzero-mean-std-b0s
+
+    # calculate non-zero mean and std for each DW
+    for i in {0..39}; do
+	ii=`printf "%04d" $i`
+	let "i1=$i+1"
+	ii1=`printf "%04d" $i1`
+	mv ../data/$sub/dw$ii1.nii.gz ../data/$sub/dw$ii.nii.gz
+	mv ../data/$sub/dw${ii1}_mask.nii.gz ../data/$sub/dw${ii}_mask.nii.gz
+        fslstats ../data/$sub/dw$ii -k ../data/$sub/dw${ii}_mask -M -S > $sub-nonzero-mean-std-dw$ii
+    done
+
+    # calculate non-zero mean and std for chisq map
+    fslstats ../data/$sub/chisq -M -S > $sub-nonzero-mean-std-chisq
+
+    # calculate snr for b0 volume
+    awk '{tmp=$1/$2;printf "%f\n", tmp;}' $sub-nonzero-mean-std-b0s > $sub-snr-b0s
+
+    # calculate snr for each dw
+    for i in {0..39}; do
+	ii=`printf "%04d" $i`
+	awk '{tmp=$1/$2;printf "%f\n", tmp;}' $sub-nonzero-mean-std-dw$ii > $sub-snr-dw$ii
+    done
+
+    cat $sub-snr-b0s $sub-snr-dw00[0-3][0-9] > snr-col2
+# merge columns with the same # of rows
+    pr -m -t -s column1 snr-col2 > $sub-snr
+
+    cat $sub-nonzero-mean-std-b0s $sub-nonzero-mean-std-dw00[0-3][0-9] $sub-nonzero-mean-std-chisq > nonzero-mean-std-col2
+    pr -m -t -s column-1 nonzero-mean-std-col2 > $sub-nonzero-mean-std
+    rm $sub-nonzero-mean-std-* nonzero-mean-std-* $sub-snr-* snr-*
+
+    echo $sub done
+done

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# this script change the value of default protocol to [subject]-protocol-new.xml
+# The changes are made for IMAGE_bCheck, DIFFUSION_bCheck, EDDYMOTION_bCheck,
+# and GRADIENT_bCheck, all from 'Yes' to 'No'.
+
+for sub in `cat subjects`; do
+    # make default protocol
+    ~/work/software/DTIPrep1.2_linux64/DTIPrep1.2 -w $sub-dwi.nhdr -p $sub-protocol.xml -d
+
+    # IMAGE_bCheck in line 19, DIFFUSION_bCheck line 63, etc.
+    sed -e "19s/Yes/No/" $sub-protocol.xml | sed -e "63s/Yes/No/" | sed -e "480s/Yes/No/" | sed -e "510s/Yes/No/" > $sub-protocol-new.xml
+
+    echo $sub done
+done

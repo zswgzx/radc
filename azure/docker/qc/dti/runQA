@@ -1,0 +1,1 @@
+/usr/local/MATLAB/R2014a/bin/matlab -nosplash -nodesktop -r 'getNewXmlMotion;get_max_motion_alldirections;import_new_snr;get_snr_stats;plot_median_chisq;plot_outlier;import_new_motion;import_all_motion;exit'

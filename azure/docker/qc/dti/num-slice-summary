@@ -1,0 +1,7 @@
+#!/bin/bash
+
+for sub in `cat ../subjects`; do
+    cat $sub-slice.txt | wc -l >> num-slice.txt 
+    mv $sub-slice.txt txts/
+    echo "$sub done"
+done

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+for sub in `cat subjects`;do
+    ~/work/software/DTIPrep1.2_linux64/DTIPrep1.2 -w $sub-dwi.nhdr \
+-p $sub-protocol-new.xml > screen
+    mv $sub*QCed.nrrd trash
+    mv $sub*new.xml protocols
+    mv $sub*col.xml protocols/default
+    mv $sub*Report.txt QCReports
+    mv $sub*.{nhdr,raw} nrrd-data
+    mv $sub*Result.xml xml-results
+    echo $sub done at `date|awk '{print $4}'`
+done

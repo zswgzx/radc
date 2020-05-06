@@ -1,0 +1,12 @@
+for sub in `cat subjs1`;do
+	if [ ! -d "$sub" ];then
+		mkdir $sub
+		mv ~/work/dti/mg/$sub/rfMRI.nii.gz $sub/rfmri.nii.gz
+		mv ~/work/dti/mg/$sub/{2TEs,FIELDMAP}.nii.gz $sub
+		mv ~/work/dti/mg/$sub/MPRAGE-corrected-reorn.nii.gz $sub/struct.nii.gz
+	fi
+	cd $sub
+	~/work/QA/fmri/code/bxh_xcede_tools-1.10.7-lsb30.x86_64/bin/analyze2bxh --xcede rfmri.nii.gz wrapped.xml
+	~/work/QA/fmri/code/bxh_xcede_tools-1.10.7-lsb30.x86_64/bin/fmriqa_generate.pl wrapped.xml /media/shengwei/BackupData/fmri/mg/150715/$sub/QAresults
+	cd ..
+done

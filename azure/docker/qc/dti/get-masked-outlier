@@ -1,0 +1,8 @@
+#!/bin/bash
+
+for sub in `cat ../dtiprep/subjects`;do
+    fslstats ../data/$sub/outlier -k ../data/$sub/chisq_mask -M >> meanOutlier.txt
+    fslstats ../data/$sub/outlier -k ../data/$sub/chisq_mask -P 50 >> medianOutlier.txt
+
+    echo $sub done
+done

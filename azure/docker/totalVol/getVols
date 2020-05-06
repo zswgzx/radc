@@ -1,0 +1,26 @@
+#!/bin/bash
+# calculate total volumes from cat12 outputs
+
+Usage() {
+    echo "Usage: $0 <scanner, mg or uc>"
+    echo "E.g. $0 uc"
+    exit 1
+}
+
+[ -z $1 ] && Usage
+
+# calculate volumes of csf/gm/wm/icv
+for sub in `cat subjs-proc`;do 
+	fslstats $sub-csf -V |awk '{print $1}' >> csf-vols
+	fslstats $sub-gm -V |awk '{print $1}' >> gm-vols
+	fslstats $sub-wm -V |awk '{print $1}' >> wm-vols
+	echo $sub
+done
+
+# calculate icv (=csf+gm+wm,these 3 shouldn't OVERLAP)
+paste csf-vols gm-vols wm-vols > vols
+sed 's/\t/+/g' vols|bc > icv-vols
+
+# gather all info
+paste subjs-proc csf-vols gm-vols wm-vols icv-vols >> total-volumes-$1
+rm *vols

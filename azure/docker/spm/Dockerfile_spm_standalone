@@ -1,0 +1,63 @@
+# https://github.com/gllmflndn/spm-docker
+
+FROM ubuntu:18.04
+
+ARG DEBIAN_FRONTEND="noninteractive"
+
+RUN apt-get update -qq \
+ && apt-get -yq --no-install-recommends install \
+     libxext6 \
+     libxt6 \
+     pigz \
+     unzip \
+     wget \
+ && apt-get clean \
+ && rm -rf \
+     /tmp/hsperfdata* \
+     /var/*/apt/*/partial \
+     /var/lib/apt/lists/* \
+     /var/log/apt/term*
+
+# Install MATLAB MCR in /opt/mcr/
+ENV MATLAB_VERSION=R2019b \
+    MCR_VERSION=v97 \
+    MCR_RELEASE=5
+RUN mkdir /opt/mcr_install \
+ && mkdir /opt/mcr \
+ && [ ${MCR_RELEASE} -gt 0 ] && zipfile="_Update_${MCR_RELEASE}" \
+ && wget --no-check-certificate --progress=bar:force -P /opt/mcr_install https://ssd.mathworks.com/supportfiles/downloads/${MATLAB_VERSION}/Release/${MCR_RELEASE}/deployment_files/installer/complete/glnxa64/MATLAB_Runtime_${MATLAB_VERSION}${zipfile}_glnxa64.zip \
+ && unzip -q /opt/mcr_install/MATLAB_Runtime_${MATLAB_VERSION}${zipfile}_glnxa64.zip -d /opt/mcr_install \
+ && /opt/mcr_install/install -destinationFolder /opt/mcr -agreeToLicense yes -mode silent \
+ && rm -rf /opt/mcr_install /tmp/* \
+ && mcr_dir="/opt/mcr/${MCR_VERSION}/bin/glnxa64" \
+ && chmod u+w ${mcr_dir} -R \
+ && rm -rf ${mcr_dir}/libcublas* ${mcr_dir}/libcublasLt* ${mcr_dir}/libcudart* ${mcr_dir}/libcudnn* ${mcr_dir}/libcufft* ${mcr_dir}/libcusparse* ${mcr_dir}/libcusolver* ${mcr_dir}/libnccl* ${mcr_dir}/*gpu* ${mcr_dir}/libopencv_cuda* /opt/mcr/v97/sys/cuda \
+ && mcr_dir="/opt/mcr/${MCR_VERSION}/mcr/toolbox" \
+ && rm -rf ${mcr_dir}/5g ${mcr_dir}/aero ${mcr_dir}/audio ${mcr_dir}/bioinfo ${mcr_dir}/comm ${mcr_dir}/control ${mcr_dir}/driving ${mcr_dir}/dsp ${mcr_dir}/econ ${mcr_dir}/finance ${mcr_dir}/fininst ${mcr_dir}/fuzzy ${mcr_dir}/geoweb ${mcr_dir}/imaq ${mcr_dir}/instrument ${mcr_dir}/lte ${mcr_dir}/map ${mcr_dir}/nnet ${mcr_dir}/pde ${mcr_dir}/phased ${mcr_dir}/predmaint ${mcr_dir}/rf ${mcr_dir}/risk ${mcr_dir}/robotics ${mcr_dir}/ros ${mcr_dir}/simbio ${mcr_dir}/textanalytics ${mcr_dir}/vision ${mcr_dir}/vnt ${mcr_dir}/wavelet ${mcr_dir}/wlan \
+ && mcr_dir="/opt/mcr/v97/toolbox" \
+ && rm -rf ${mcr_dir}/antenna ${mcr_dir}/bioinfo ${mcr_dir}/imaq ${mcr_dir}/robotics ${mcr_dir}/ros ${mcr_dir}/simulink ${mcr_dir}/textanalytics
+
+# Install SPM Standalone in /opt/spm12r$REV
+ENV SPM_VERSION=12 \
+    SPM_REVISION=r7771 \
+    SPM_HTML_BROWSER=0 \
+    MCR_INHIBIT_CTF_LOCK=1 \
+    LD_LIBRARY_PATH="/opt/mcr/${MCR_VERSION}/runtime/glnxa64:/opt/mcr/${MCR_VERSION}/bin/glnxa64:/opt/mcr/${MCR_VERSION}/sys/os/glnxa64:/opt/mcr/${MCR_VERSION}/sys/opengl/lib/glnxa64:/opt/mcr/${MCR_VERSION}/extern/bin/glnxa64"
+# Running SPM once with "function exit" tests the succesfull installation *and*
+# extracts the ctf archive which is necessary if singularity is used
+RUN wget --no-check-certificate --progress=bar:force -P /opt https://www.fil.ion.ucl.ac.uk/spm/download/restricted/bids/spm${SPM_VERSION}_${SPM_REVISION}_Linux_${MATLAB_VERSION}.zip \
+ && unzip -q /opt/spm${SPM_VERSION}_${SPM_REVISION}_Linux_${MATLAB_VERSION}.zip -d /opt \
+ && mv /opt/spm${SPM_VERSION} /opt/spm${SPM_VERSION}${SPM_REVISION} \
+ && rm -f /opt/spm${SPM_VERSION}_${SPM_REVISION}_Linux_${MATLAB_VERSION}.zip \
+ && /opt/spm${SPM_VERSION}${SPM_REVISION}/spm${SPM_VERSION} function exit \
+ && chmod +x /opt/spm${SPM_VERSION}${SPM_REVISION}/spm${SPM_VERSION}
+
+# Configure entry point
+RUN echo '#!/usr/bin/env bash' >> /opt/spm12.sh \
+ && echo 'set -e' >> /opt/spm12.sh \
+ && echo 'export USER="${USER:=`whoami`}"' >> /opt/spm12.sh \
+ && echo 'export PATH="$PATH:/opt/spm${SPM_VERSION}${SPM_REVISION}"' >> /opt/spm12.sh \
+ && echo 'if [ -n "$1" ]; then spm12 "$@"; else spm12 -h; fi' >> /opt/spm12.sh \
+ && chmod +x /opt/spm12.sh
+
+ENTRYPOINT ["/opt/spm12.sh"]

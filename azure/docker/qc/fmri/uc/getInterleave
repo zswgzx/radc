@@ -1,0 +1,4 @@
+for sub in `cat /media/shengwei/BackupData/fmri/uc/150908/subjs1`;do
+	ln -s /media/shengwei/BackupData/fmri/uc/150908/$sub/interleave-masked data/$sub
+	echo $sub done
+done

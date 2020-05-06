@@ -1,0 +1,34 @@
+#!/bin/bash
+
+if [ -d $1 ];then
+	cd $1
+
+	mv DIFF_DTI_45_directions*.bval bvals
+        mv DIFF_DTI_45_directions*.bvec bvecs
+        mv DIFF_DTI_45_directions*.nii.gz $1.nii.gz
+	cp bvecs /media/shengwei/BackupData/dti/mg/150715/bvecs/$1.bvecs
+	cp $1.nii.gz /media/shengwei/BackupData/dti/mg/150715/raw/$1-DWIs.nii.gz
+	gunzip $1.nii.gz
+
+	# rename files
+	mv ep2d_fid_basic_bold*.nii.gz rfMRI.nii.gz
+	mv gre_field_mapping_e2_ph.nii.gz FIELDMAP.nii.gz
+	# use Dcm2niix-fieldmap to get the 2TEs images, the following won't work since 1905*
+	# mv `ls gre_*` 2TEs.nii.gz
+	# fslcpgeom FIELDMAP 2TEs -d
+	fslmerge -a 2TEs gre_field_mapping_e?.nii.gz
+
+	# rm *ND.nii.gz
+	mv t1_mpr_ns_sag_pat2_iso.nii.gz MPRAGE-corrected-reorn.nii.gz
+	mv FLAIR_Axial_TE_150.nii.gz FLAIR-corrected.nii.gz
+
+	mv T2_mapping*.nii.gz T2-5echoes.nii.gz
+	fslroi T2-5echoes ../structural/$1-echo2 0 -1 0 -1 0 -1 1 1
+	gunzip ../structural/$1-echo2.nii.gz
+
+	mv t2_fl3d_tra_QSM*_ph.nii.gz qsm-phs.nii.gz
+	mv t2_fl3d_tra_QSM*.nii.gz qsm-mag.nii.gz
+	cd ..
+
+else	echo "$1 is NOT a folder or does NOT exist"
+fi

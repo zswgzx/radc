@@ -1,0 +1,40 @@
+#!/bin/bash
+# rename extracted data from server for processing
+
+if [ -d $1 ];then
+	cd $1
+
+	# fmri files
+	mkdir /media/shengwei/BackupData/fmri/uc/150908/$1
+	mv EPI*.nii.gz /media/shengwei/BackupData/fmri/uc/150908/$1/rfmri.nii.gz
+	mv SE_EPI_A.nii.gz /media/shengwei/BackupData/fmri/uc/150908/$1/se-epi-a.nii.gz
+	mv SE_EPI_P.nii.gz /media/shengwei/BackupData/fmri/uc/150908/$1/se-epi-p.nii.gz
+	mv MPRAGE.nii.gz /media/shengwei/BackupData/fmri/uc/150908/$1/t1-reorient.nii.gz
+
+	mv FLAIR*.nii.gz ~/work/vbm/uc/flair/raw/$1.nii.gz
+
+	# qsm files
+	mkdir /media/shengwei/BackupData/dti/uc/150908/$1
+        if [ `ls Q*|wc -l` == '1' ];then
+		echo "Reconvert qsm & t2 mapping files for $1!"
+	else 
+		mkdir /media/shengwei/BackupData/qsm/uc/raw/$1
+                fslmerge -a /media/shengwei/BackupData/qsm/uc/raw/$1/real `ls Q*e?_real*gz`
+                fslmerge -a /media/shengwei/BackupData/qsm/uc/raw/$1/imag `ls Q*e?_imag*gz`
+        # t2 mapping files
+                fslmerge -a ~/work/t2-5echoes/uc/t2-5echoes/$1-5T2s T2*.nii.gz
+                mv T2*2.nii.gz /media/shengwei/BackupData/dti/uc/150908/$1/${1}_T2_echo2.nii.gz
+                rm T2*
+	fi
+
+	# dti parrec
+	if [ -f parrec.zip ] ;then
+		unzip -qj parrec parrec/*DTI*
+		mv *DTI*.PAR $1.PAR;mv *DTI*.REC $1.REC;gzip $1.{PAR,REC}
+                mv *.{PAR,REC}.gz /media/shengwei/BackupData/dti/uc/150908/$1
+		rm parrec.zip
+	else echo "No parrec.zip"
+	fi
+	cd ..
+else 	echo "$1 is NOT a folder or does NOT exist"
+fi

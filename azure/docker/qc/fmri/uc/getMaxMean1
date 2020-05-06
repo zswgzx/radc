@@ -1,0 +1,7 @@
+for sub in `cat /media/shengwei/BackupData/fmri/uc/150908/subjs1`;do
+	ln -s /media/shengwei/BackupData/fmri/uc/150908/$sub/QAresults/qa_slicevardata_wrapped.xml.nii.gz nii/$sub.nii.gz 
+	fslstats nii/$sub -R | awk '{print $2}' > max/$sub
+        fslstats nii/$sub -m > mean/$sub
+	
+	echo $sub done
+done

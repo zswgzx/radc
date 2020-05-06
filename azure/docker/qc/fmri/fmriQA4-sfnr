@@ -1,0 +1,11 @@
+for sub in `cat subjs1`;do
+	cd $sub
+
+	fslmaths QAresults/qa_meandata_wrapped.xml -mas QAresults/qa_maskdata_wrapped.xml -div QAresults/qa_stddevdata_wrapped.xml sfnr-whole-brain
+	
+	fslstats sfnr-whole-brain -M >> ../sfnrs
+
+	rm sfnr-whole-brain.nii.gz
+	echo $sub done
+	cd ..
+done

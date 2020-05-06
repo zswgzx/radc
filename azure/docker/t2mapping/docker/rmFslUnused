@@ -1,0 +1,40 @@
+# most likely for all apps
+rm -rf $FSLDIR/doc $FSLDIR/[prst]* $FSLDIR/etc/[djlx]* $FSLDIR/data/[afmp]*
+find $FSLDIR/bin -type l -delete 
+
+# specifics (bet mainly)
+rm -rf $FSLDIR/data/standard/[bt]* \
+$FSLDIR/data/standard/[aFL]* \
+$FSLDIR/data/standard/MNI152l* \
+$FSLDIR/data/standard/MNI152_T1_[01]* \
+$FSLDIR/data/standard/MNI152_T1_2mm_[LV]*
+
+rm -f $FSLDIR/lib/lib[b-f]* $FSLDIR/lib/lib[MNOqQsuvwz]* \
+$FSLDIR/lib/libg[gi]* \
+$FSLDIR/lib/libopenblas[6op-]* \
+$FSLDIR/lib/libmesh* \
+$FSLDIR/lib/libmiscp* \
+$FSLDIR/lib/libmm* \
+$FSLDIR/lib/libnewm* 
+
+rm -f $FSLDIR/bin/a[fipstuv]* \
+$FSLDIR/bin/e[adpsx]* \
+$FSLDIR/bin/[dghilmnopqtuvwxzARTV]* \
+$FSLDIR/bin/b[0ai]* \
+$FSLDIR/bin/bed* \
+$FSLDIR/bin/bets* \
+$FSLDIR/bin/c[achlru]* \
+$FSLDIR/bin/con[cnt]* \
+$FSLDIR/bin/convertw* \
+$FSLDIR/bin/f[adeintu]* \
+$FSLDIR/bin/fla* \
+$FSLDIR/bin/flirt_* \
+$FSLDIR/bin/fsl[_2acefinoprtwF]* \
+$FSLDIR/bin/fslm[eo]* \
+$FSLDIR/bin/fsls[eilmuw]* \
+$FSLDIR/bin/fslv[bi]* \
+$FSLDIR/bin/r[amou]* \
+$FSLDIR/bin/ren* \
+$FSLDIR/bin/s[eilmpuwy]* \
+$FSLDIR/bin/std*
+

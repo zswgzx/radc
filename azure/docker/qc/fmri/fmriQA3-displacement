@@ -1,0 +1,22 @@
+tpw=5
+alltp=160
+#let 'tp_end=alltp-tpw'
+
+for sub in `cat subjs1`;do
+	cd $sub
+<<EOF
+	for i in {0..155};do # tp_end is how the end of range should be
+		fslroi rfmri rfmri5tp 0 -1 0 -1 0 -1 $i $tpw
+		3dvolreg -prefix NULL -Fourier -1Dfile tmp rfmri5tp.nii.gz
+		cat tmp | tail -4 >> 5tp-displacement
+	done
+	rm tmp rfmri5tp.nii.gz
+EOF
+
+	3dvolreg -prefix NULL -Fourier -1Dfile tmp rfmri.nii.gz
+	cat tmp | tail -159 >> displacement
+	rm tmp
+
+	echo $sub done
+	cd ..
+done

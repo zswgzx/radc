@@ -1,0 +1,4 @@
+for sub in `cat /media/shengwei/BackupData/fmri/uc/150908/subjs1`;do
+	ln -s /media/shengwei/BackupData/fmri/uc/150908/$sub/displacement 4tpi/$sub
+	echo $sub done
+done

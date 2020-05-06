@@ -1,0 +1,5 @@
+for sub in `cat /media/shengwei/BackupData/fmri/uc/150908/subjs1`;do
+	awk '{print $2}' /media/shengwei/BackupData/fmri/uc/150908/$sub/QAresults/qa_data_outliercount.txt | tail -160 > data/$sub
+
+	echo $sub done
+done

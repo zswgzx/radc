@@ -1,0 +1,13 @@
+#!/bin/bash
+
+for sub in `cat ../dtiprep/subjects`;do
+    # apply fluid artifact mask first, then threshold, binarize and erode to make the first version of mask
+    fslmaths `ls /media/shengwei/BackupData/dti/mg/150715/${sub}_proc/${sub}_DMC_R1_SAVE/${sub}_DMC_R1_TR.nii.gz` -mul `ls /media/shengwei/BackupData/dti/mg/150715/${sub}_proc/${sub}_DMC_R1_SAVE/${sub}_DMC_R1_MF.nii.gz` -thr 0 -uthr 7000 -bin -ero ../data/$sub/chisq_mask -odt char
+    # erode the chisq map and binarize to make another mask, then combine it with the previous mask to get the final one
+    fslmaths ../data/$sub/chisq -ero -bin chisq-mask -odt char
+    fslmaths ../data/$sub/chisq_mask -mul chisq-mask chisq_mask1
+    mv chisq_mask1.nii.gz ../data/$sub/chisq_mask.nii.gz
+    echo $sub done
+done
+
+rm chisq-mask.nii.gz

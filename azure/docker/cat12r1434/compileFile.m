@@ -1,0 +1,3 @@
+mcc -d ./ -m -o cat12r1434 ...
+    -v ./cat12r1434_standalone.m
+exit;

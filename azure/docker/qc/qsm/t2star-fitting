@@ -1,0 +1,8 @@
+for sub in `cat ~/work/qsm/$1/subjs`;do 
+        cd $sub
+	# find mean chi2 in chi2masked.nii for QA
+	fslstats chi2masked -M >> ../nonzero-meanchi2
+	cd ..
+	echo $sub
+done
+cat ~/work/qsm/$1/subjs >> subjsAll

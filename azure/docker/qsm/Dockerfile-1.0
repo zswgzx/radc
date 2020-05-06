@@ -1,0 +1,52 @@
+FROM ubuntu:16.04
+
+ARG DEBIAN_FRONTEND="noninteractive"
+
+RUN apt-get update -qq \
+    && apt-get install -yq --no-install-recommends \
+           apt-utils \
+           bc \
+           ca-certificates \
+           curl \
+           dc \
+           libopenblas-dev \
+           libxt6 \
+           unzip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && if [ ! -f "/opt/qsm.sh" ]; then \
+         echo '#!/usr/bin/env bash' >> /opt/qsm.sh \
+    &&   echo 'set -e' >> /opt/qsm.sh \
+    &&   echo 'export USER="${USER:=`whoami`}"' >> /opt/qsm.sh;fi \
+    && chmod 777 /opt && chmod a+s /opt && chmod a+x /opt/qsm.sh
+
+ENV FSLDIR="/opt/fsl-6.0.3" \
+    PATH="/opt/fsl-6.0.3/bin:$PATH"
+RUN echo "Downloading FSL ..." \
+    && mkdir -p /opt/fsl-6.0.3 \
+    && curl -fsSL https://fsl.fmrib.ox.ac.uk/fsldownloads/fsl-6.0.3-centos6_64.tar.gz \
+    | tar -xz -C /opt/fsl-6.0.3 --strip-components 1 \
+    && rm -rf $FSLDIR/bin/FSLeyes $FSLDIR/data $FSLDIR/lib $FSLDIR/src $FSLDIR/etc/xtract_data \
+    && rm -f $FSLDIR/bin/[a-e]* $FSLDIR/bin/[A-V]* $FSLDIR/bin/[g-z]* $FSLDIR/bin/fsl_* $FSLDIR/bin/fsl[ab]* $FSLDIR/bin/fslc[chor]* $FSLDIR/bin/fsl[d-g]* $FSLDIR/bin/fsli* $FSLDIR/bin/fslm[eo]* $FSLDIR/bin/fsl[nptw]* $FSLDIR/bin/f[a-i]* $FSLDIR/bin/flameo $FSLDIR/bin/fn* $FSLDIR/bin/f[ltu]* $FSLDIR/bin/fsls[ilmtu]* $FSLDIR/bin/fslv[bi]* \
+    && echo '. $FSLDIR/etc/fslconf/fsl.sh' >> /opt/qsm.sh
+
+ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/opt/matlabmcr-2018b/v95/runtime/glnxa64:/opt/matlabmcr-2018b/v95/bin/glnxa64:/opt/matlabmcr-2018b/v95/sys/os/glnxa64"
+RUN export TMPDIR="$(mktemp -d)" \
+    && echo "Downloading MATLAB Compiler Runtime ..." \
+    && curl -fsSL -o "$TMPDIR/mcr.zip" https://ssd.mathworks.com/supportfiles/downloads/R2018b/deployment_files/R2018b/installers/glnxa64/MCR_R2018b_glnxa64_installer.zip \
+    && unzip -q "$TMPDIR/mcr.zip" -d "$TMPDIR/mcrtmp" \
+    && "$TMPDIR/mcrtmp/install" -destinationFolder /opt/matlabmcr-2018b -mode silent -agreeToLicense yes \
+    && rm -rf "$TMPDIR" /tmp/mathworks* \
+    && unset TMPDIR
+
+COPY preproc /usr/local/bin/
+COPY postproc /usr/local/bin/
+COPY qsm /usr/local/bin/
+
+RUN chmod u+x /usr/local/bin/qsm \
+    && chmod u+x /usr/local/bin/preproc \
+    && chmod u+x /usr/local/bin/postproc \
+    && echo 'qsm $1 /input/$2' >> /opt/qsm.sh \
+    && echo 'rm /input/$2/*bet_*;cd /input;tar cfz $2.tgz $2/' >> /opt/qsm.sh
+
+ENTRYPOINT ["/opt/qsm.sh"]

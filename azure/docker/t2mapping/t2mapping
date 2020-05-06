@@ -1,0 +1,28 @@
+cp /data/$2 /out
+cd /out
+fslsplit $2 echo -t
+if [ $1 = 'mg' ];then
+	for i in {0..4};do
+		fslmaths echo000$i -add 0 echo000$i -odt float
+	done
+fi
+gunzip echo0*
+t2_map_mask_float 5 20 40 60 80 100
+bet echo0000 brain -S
+gzip {chi2,mask,t2vol,pdw}.nii
+fslmaths brain_mask -fillh26 brain_mask -odt char
+fslmaths t2vol -mas brain_mask -abs t2vol1
+fslmaths t2vol1 -thr 250 -bin mask250
+fslmaths brain_mask -sub mask250 -ero chi2mask -odt char
+rm echo0* {brain,brain_skull,mask250,t2vol1}.nii.gz
+subjid=`cat $2|cut -d- -f1`
+mv chi2.nii.gz $subjid-chi2.nii.gz
+mv mask.nii.gz $subjid-headmask.nii.gz
+mv t2vol.nii.gz $subjid-rawT2.nii.gz
+$sub-rawT2.nii.gz $subjid-brainmask.nii.gz
+mv chi2mask.nii.gz $subjid-chi2mask.nii.gz
+mv pdw.nii.gz $subjid-rawPDw.nii.gz
+fslmaths $subjid-rawPDw -mas $subjid-headmask $subjid-pdw
+fslmaths $subjid-rawT2 -mas $subjid-headmask -thr 0 $subjid-t2
+rm $2
+chown -R 1000:1000 /out
