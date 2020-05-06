@@ -1,0 +1,12 @@
+*.dat
+*.pyc
+./postmortem/out/*
+__pycache__
+__pycache__/*_
+
+./target
+
+# Intellij
+.idea/
+*.iml
+*.iws
