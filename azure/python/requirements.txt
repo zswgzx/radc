@@ -1,0 +1,4 @@
+azure-core
+azure-common
+azure-batch
+azure-storage-blob
