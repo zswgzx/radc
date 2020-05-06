@@ -1,0 +1,4 @@
+docker build . -t zswgzx/mriqc_radc:latest
+docker login
+docker image push zswgzx/mriqc_radc:latest
+docker logout

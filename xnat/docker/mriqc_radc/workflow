@@ -1,0 +1,7 @@
+1. inspect command.json, setup_bids.sh & Dockerfile
+ref "https://wiki.xnat.org/container-service/command-31785434.html"
+2. run 'python ../commands2label.py command.json >> Dockerfile'
+3. run './buildDockerImage'
+4. on xnat page: Administer > Plugin Settings > Images & Commands > Add New Image > Image Name: e.g. zswgzx/mriqc_radc > Pull Image
+5. on xnat page: @ xnat *project*  level, choose Actions > Project Settings > Config. Commands > enable the docker image from step 4
+6. on xnat page: @ xnat experiment level, choose Actions > Run Containers > mriqcT1w; then monitor the status, if suceeded done, if not repeat 1-6 till suceeded.

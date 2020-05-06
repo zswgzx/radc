@@ -1,0 +1,145 @@
+id : TEST_AJ3
+runningTitle : Test Project3
+title : Testing Project3 title
+keywords : MRI MR AJ3
+description : This project3 contains MRI imaging data used for testing.
+subjects :
+    70978502 :
+        complexSessions :
+            180917_00_70978502 :
+                file : dicom.zip
+                subfolder : 180604/180917_00_70978502
+                xsiType : xnat:mrSessionData
+                customVariables :
+                    ProtocolDate : 01/25/2016
+                    ScannerCode : UCP
+                resources :
+                    session_notes:
+                        files :
+                        - protocol 1-25-2016.pdf
+                        - MRI_Scan_info_UC_3T.txt
+                        subFolder : 180604/180917_00_70978502
+
+                scans :
+                    001 :
+                        type : 'Scanner Nifti'
+                        xsiType : xnat:mrScanData
+                        resources :
+                            IMAGE :
+                                complexFiles : 
+                                    Nifti.zip :
+                                        unzip : true
+                                subFolder : 180604/180917_00_70978502
+                    002 :
+                        type : 'Scanner PAR REC'
+                        xsiType : xnat:mrScanData
+                        resources :
+                            IMAGE :
+                                complexFiles : 
+                                    parrec.zip :
+                                        unzip : true
+                                subFolder : 180604/180917_00_70978502
+                    003 :
+                        type : 'Scanner QSM'
+                        xsiType : xnat:mrScanData
+                        resources :
+                            IMAGE :
+                                complexFiles :
+                                    QSM.zip :
+                                        unzip : true
+                                subFolder : 180604/180917_00_70978502
+    74294441 :
+        complexSessions :
+            190409_02_74294441 :
+                file : dicom.zip
+                subfolder : 180604/190409_02_74294441
+                xsiType : xnat:mrSessionData
+                customVariables :
+                    ProtocolDate : 01/25/2016
+                    ScannerCode : UCP
+                resources :
+                    session_notes:
+                        files :
+                        - protocol 1-25-2016.pdf
+                        - MRI_Scan_info_UC_3T.txt
+                        subFolder : 180604/190409_02_74294441
+
+                scans :
+                    001 :
+                        type : 'Scanner Nifti'
+                        xsiType : xnat:mrScanData
+                        resources :
+                            IMAGE :
+                                complexFiles :
+                                    Nifti.zip :
+                                        unzip : true
+                                subFolder : 180604/190409_02_74294441
+                    002 :
+                        type : 'Scanner PAR REC'
+                        xsiType : xnat:mrScanData
+                        resources :
+                            IMAGE :
+                                complexFiles :
+                                    parrec.zip :
+                                        unzip : true
+                                subFolder : 180604/190409_02_74294441
+    99514112 :
+        complexSessions :
+            190503_08_99514112 :
+                file : dicomdata.zip
+                subfolder : 180604/190503_08_99514112
+                xsiType : xnat:mrSessionData
+                customVariables :
+                    ProtocolDate : 01/25/2016
+                    ScannerCode : UCP
+                resources :
+                    session_notes:
+                        files :
+                        - protocol 1-25-2016.pdf
+                        - MRI_Scan_info_UC_3T.txt
+                        subFolder : 180604/190503_08_99514112
+
+                scans :
+                    001 :
+                        type : 'Scanner Nifti'
+                        xsiType : xnat:mrScanData
+                        resources :
+                            IMAGE :
+                                complexFiles :
+                                    Nifti.zip :
+                                        unzip : true
+                                subFolder : 180604/190503_08_99514112
+                    002 :
+                        type : 'Scanner PAR REC'
+                        xsiType : xnat:mrScanData
+                        resources :
+                            IMAGE :
+                                complexFiles :
+                                    parrec.zip :
+                                        unzip : true
+                                subFolder : 180604/190503_08_99514112
+                    003 :
+                        type : 'Scanner QSM'
+                        xsiType : xnat:mrScanData
+                        resources :
+                            IMAGE :
+                                complexFiles :
+                                    QSM.zip :
+                                        unzip : true
+                                subFolder : 180604/190503_08_99514112
+
+pi :
+    firstname : Arnold
+    lastname : Evia
+
+variableSets :
+    - name : 'MR Acquisition'
+      projectSpecific : true
+      dataType : 'xnat:mrSessionData'
+      variables :
+          - name : ProtocolDate
+            required : true
+            type : date
+          - name : ScannerCode
+            required : true
+            type : string
