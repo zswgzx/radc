@@ -1,17 +1,21 @@
 #!/bin/python3
 
-import pwd, grp, os, sys, shutil, zipfile, tarfile, re
+import grp
 import logging
-
-from nipype.interfaces.dcm2nii import Dcm2niix
-
-from nipype.interfaces.fsl import Merge
+import os
+import pwd
+import re
+import shutil
+import sys
+import tarfile
+import zipfile
 
 from util.mri_wrapper import Mri_wrapper
 from util.radc_utils import find_dicom
 
 _STAGING_INPUT = "/san1/mri_convert/staging"
 logging.basicConfig(filename='convert.log', filemode='w', level=logging.INFO)
+
 
 def __test_convert():
     for entry in os.scandir("/san1/test/"):
@@ -139,9 +143,7 @@ def __clear_staging_folders():
         os.mkdir(_STAGING_INPUT)
 
 
-
 if __name__ == '__main__':
     __test_convert()
     sys.exit()
-
 
