@@ -1,9 +1,9 @@
 from datetime import datetime
 
-MRI_BASE_DIR = '/mri/invivo/raw/'
+MRI_RAW_BASE_DIR = '/mri/invivo/raw/'
 
 
-class Scan_key(object):
+class ScanKey(object):
     #Scankey example 090429_06_75833578
     def __init__(self, scan_key):
         self.scan_key = scan_key
@@ -27,7 +27,7 @@ class Bannockburn():
         start_date = get_matching_startdate(self.start_dates, scanKey)
         if start_date is None:
             print('Could not find BNK start date for ' + scanKey)
-        return MRI_BASE_DIR + 'bannockburn/' + start_date + '/' + scanKey.scan_key
+        return MRI_RAW_BASE_DIR + 'bannockburn/' + start_date + '/' + scanKey.scan_key
 
     def __str__(self):
         return 'Bacnnockburn Scan'
@@ -41,7 +41,7 @@ class MG():
         start_date = get_matching_startdate(self.start_dates, scanKey)
         if (start_date is None):
             print('Could not find MG start date for ' + scanKey)
-        return MRI_BASE_DIR + 'mg/' + start_date + '/' + scanKey.scan_key
+        return MRI_RAW_BASE_DIR + 'mg/' + start_date + '/' + scanKey.scan_key
 
     def __str__(self):
         return 'Morton Grove scan'
@@ -55,7 +55,7 @@ class UC():
         start_date = get_matching_startdate(self.start_dates, scanKey)
         if (start_date is None):
             print('Could not find UC start date for ' + scanKey)
-        return MRI_BASE_DIR + 'uc/' + start_date + '/' + scanKey.scan_key
+        return MRI_RAW_BASE_DIR + 'uc/' + start_date + '/' + scanKey.scan_key
 
     def __str__(self):
         return 'University of Chicago scan'

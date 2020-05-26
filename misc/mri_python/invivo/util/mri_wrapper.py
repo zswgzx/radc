@@ -1,25 +1,24 @@
 import re
-# This class is used to contain meta data of scan that can be parsed from the path
-# i.e. date, visit, projid, potocol
-class Mri_wrapper(object):
 
+# This class obtains meta data (i.e. date, visit, projid, protocol) of scan from its path
+class MriWrapper(object):
     def __init__(self, path):
         self.path = path
-        self.protocol = ''
-        date_visit_projid_search = re.search('\d{6}_\d{2}_\d{8}', path)
+        scankey_search = re.search('\d{6}_\d{2}_\d{8}', path)
 
-        if date_visit_projid_search is None:
-            print('WARNING: could not find date_visit_projid from ' + path)
+        if scankey_search is None:
+            sys.exit('Could not find scan key from ' + path)
+        else:
+            scan_key = scankey_search.group(0).split('_')
+            self.date = scan_key[0]
+            self.visit = scan_key[1]
+            self.projid = scan_key[2]
 
-        if date_visit_projid_search is not None:
-            date_visit_projid = date_visit_projid_search.group(0).split('_')
-            self.date = date_visit_projid[0]
-            self.visit = date_visit_projid[1]
-            self.projid = date_visit_projid[2]
-
-        if re.search('bannockburn', path ) is not None:
-            self.protocol = 'bannockburn'
-        if re.search('mg', path) is not None:
-            self.protocol = 'mg'
-        if re.search('uc', path) is not None:
-            self.protocol = 'uc'
+        if re.search('bannockburn', path):
+            self.protocol = ('bannockburn',)
+        elif re.search('mg', path):
+            self.protocol = ('mg',)
+        elif re.search('uc', path):
+            self.protocol = ('uc',)
+        else:
+            sys.exit('No such active or valid protocol exists')
