@@ -146,3 +146,4 @@ def __clear_staging_folders():
 if __name__ == '__main__':
     __test_convert()
     sys.exit()
+
